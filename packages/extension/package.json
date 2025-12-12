@@ -1,0 +1,51 @@
+{
+    "name": "vscode-portugues-puro",
+    "description": "The extension specific package",
+    "version": "0.0.1",
+    "displayName": "portugues-puro",
+    "type": "module",
+    "engines": {
+        "vscode": "^1.67.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "contributes": {
+        "languages": [{
+            "id": "portugues-puro",
+            "aliases": ["Portugues Puro", "portugues-puro"],
+            "extensions": [".pop"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "portugues-puro",
+            "scopeName": "source.portugues-puro",
+            "path": "syntaxes/portugues-puro.tmLanguage.json"
+        }]
+    },
+    "activationEvents": [
+        "onLanguage:portugues-puro"
+    ],
+    "main": "./out/extension/main.cjs",
+    "scripts": {
+        "clean": "shx rm -fr *.tsbuildinfo out syntaxes",
+        "vscode:prepublish": "npm run build",
+        "build:prepare": "shx mkdir -p ./syntaxes/ && shx cp -f ../language/syntaxes/portugues-puro.tmLanguage.json ./syntaxes/portugues-puro.tmLanguage.json",
+        "build": "npm run build:prepare && tsc -b tsconfig.json && node esbuild.mjs",
+        "build:clean": "npm run clean && npm run build",
+        "watch": "npm run build:prepare && concurrently -n tsc,esbuild -c blue,yellow \"tsc -b tsconfig.json --watch\" \"node esbuild.mjs --watch\""
+    },
+    "dependencies": {
+        "portugues-puro-language": "0.0.1",
+        "vscode-languageclient": "~9.0.1",
+        "vscode-languageserver": "~9.0.1"
+    },
+    "devDependencies": {
+        "@types/vscode": "~1.67.0",
+        "concurrently": "~8.2.1",
+        "esbuild": "~0.25.5"
+    },
+    "vsce": {
+      "dependencies": false
+    }
+}

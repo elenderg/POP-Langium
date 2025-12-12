@@ -1,0 +1,17 @@
+{
+    "projectName": "PortuguesPuro",
+    "languages": [
+        {
+            "id": "portugues-puro",
+            "grammar": "src/portugues-puro.langium",
+            "fileExtensions": [
+                "pop"
+            ],
+            "textMate": {
+                "out": "syntaxes/portugues-puro.tmLanguage.json"
+            },
+            "caseInsensitive": true
+        }
+    ],
+    "out": "src/generated"
+}
