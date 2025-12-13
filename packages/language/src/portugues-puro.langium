@@ -757,7 +757,8 @@ OutrosVerbos returns string:
   | 'parece'  | 'requer'   | 'supera'    | 'superam'    | 'superar';
 
 
-Identificador: nome=IDENTIFICADOR; // Aviso: Esta regra precisa ficar por último, por ser a mais genérica possível.
+Identificador: nome=IDENTIFICADOR; 
+// Observação: Esta regra precisa ficar por último, por ser a mais genérica possível.
 
 // ============================================================================
 // TERMINAIS
