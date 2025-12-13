@@ -383,7 +383,7 @@ DeclaracaoDeVariavelGlobalComTipoEstruturado:
 // ============================================================================
 
 DeclaracaoDeTipo:
-  (  DeclaracaoDeTipoSimples
+  ( DeclaracaoDeTipoSimples
   | DeclaracaoDePonteiro
   | DeclaracaoDeTipoEscalar
   | DeclaracaoDeTipoEstruturado
