@@ -27,18 +27,18 @@ CabecalhosDeRotinas_e_Funcoes:
   ;
 
 CabecalhoPrincipalDaRotina:
-  'Rotina'?
+  PALAVRA_ROTINA?
   'para'
   'que'
-  'se'
+  PALAVRA_SE
   Cabecalho=CabecalhoComDoisPontos  
   ;
 
 CabecalhoAlternativoDaRotina:
-  'Rotina'?
+  PALAVRA_ROTINA?
   'para'
   'que'
-  'se'
+  PALAVRA_SE
   Cabecalho=CabecalhoComPontoEVirgula
   ;
 
@@ -46,9 +46,9 @@ CabecalhoPrincipalDaFuncaoBooliana:
   'Função'?
   'para'
   'que'
-  'se'
+  PALAVRA_SE
   'determine'
-  'se'
+  PALAVRA_SE
   Cabecalho=CabecalhoComDoisPontos  
   ;
 
@@ -56,9 +56,9 @@ CabecalhoAlternativoDaFuncaoBooliana:
   'Função'?
   'para'
   'que'
-  'se'
+  PALAVRA_SE
   'determine'
-  'se'
+  PALAVRA_SE
   Cabecalho=CabecalhoComPontoEVirgula
   ;
 
@@ -66,7 +66,7 @@ CabecalhoPrincipalDaFuncaoComputadora:
   'Função'?
   'para'
   'que'
-  'se'
+  PALAVRA_SE
   'atribua'
   ArtigoDefinido
   CampoCalculado=Identificador
@@ -82,7 +82,7 @@ CabecalhoAlternativoDaFuncaoComputadora:
   'Função'?
   'para'
   'que'
-  'se'
+  PALAVRA_SE
   'atribua'
   ArtigoDefinido
   CampoCalculado=Identificador
@@ -148,7 +148,7 @@ ClausulaDeDirecionamento:
   NomeDoTipo='ponteiro'
   'para'
   ArtigoDefinido
-  'rotina'
+  PALAVRA_ROTINA
   NomeDaRotina=InvocacaoInterna
   ;
 
@@ -162,7 +162,7 @@ ExpressaoCondicional:
 
 
 AvaliacaoCondicional:
-  'Se'
+  PALAVRA_SE
   ExpressaoCondicional
   VIRGULA
   BlocoCondicional
@@ -191,16 +191,33 @@ InvocacaoInterna:
   Complemento+=Complementos*
   (
     ListaDeArgumentos+=Argumentos
-    Complemento+=(Complementos|Artigo|Contracao)*
+    Complemento+=(
+        Complementos
+      | Artigo
+      | Contracao
+      | AdverbioIgnoravel
+      | AdverbioNegacao
+    )*
     Outro+=Identificador
   )*
   (Qualificador)?
   ;
 
 Argumentos:  
-  (Variavel | VariavelPrecedidaDeContracao)
-  (Denominacao NomeDoParametro=Identificador)?
-  
+  (
+      Variavel 
+    | VariavelPrecedidaDeContracao
+  )  
+  (
+    Denominacao
+    NomeDoParametro=Identificador
+  )?  
+  (
+    OperadorDeCoercaoDeTipo
+    ArtigoIndefinido
+    NomeDoTipo=Identificador
+  )
+  Modificador+=ExpressaoAlgebrica*
   ;
 
 Parametros:
@@ -241,7 +258,7 @@ InstrucoesDeLaco returns string:
 
 InvocacaoIndireta:
   'Processe'  
-  Ponteiro=Variavel  
+  PonteiroParaRotina=Variavel  
   (
     'com'
     ListaDeArgumentos+=ArgumentosEncadeados
@@ -265,6 +282,7 @@ InvocacaoExterna:
     'retornando'
     Artigo
     NomeDaVariavel=Identificador
+    Modificador+=ExpressaoAlgebrica*
   )?
   ;
 
@@ -273,12 +291,14 @@ ArgumentosEncadeados:
       ValorLiteral 
     | Variavel
   )
+  Modificador+=ExpressaoAlgebrica*
   ( 
     'e' 
     (
         Valor+=ValorLiteral 
       | Variavel+=Variavel
-    ) 
+    )
+    Modificador+=ExpressaoAlgebrica*
   )*
   ;
 
@@ -429,7 +449,7 @@ ArrayDeBytes:
 
 Pausa returns string:
     ConjuncoesComuns 
-  | ','
+  | VIRGULA
   ;
 
 
@@ -538,6 +558,13 @@ HexadecimalLiteral: valor=NUMERO_HEXADECIMAL;
 BoolianoLiteral: valor= ( 'sim' | 'não' );
 
 PonteiroLiteral: valor='inexistente';
+
+ExpressaoAlgebrica:
+  (Variavel|ValorLiteral)
+  (OperadorAritmetico|OperadorDeConcatenacao)
+  (Variavel|ValorLiteral)
+  ;
+
 
 OperadorAritmetico returns string:
     'mais' 
@@ -736,14 +763,10 @@ Identificador: nome=IDENTIFICADOR; // Aviso: Esta regra precisa ficar por últim
 // TERMINAIS
 // ============================================================================
 
-terminal OUTROS_VERBOS: 
-    'excede'  | 'excedem'  | 'necessita' | 'necessitar' | 'parecer'
-  | 'parece'  | 'requer'   | 'supera'    | 'superam'    | 'superar';
-
-
 terminal PALAVRA_EH: 'é';
 terminal PALAVRA_SAO: 'são';
-
+terminal PALAVRA_ROTINA: 'Rotina';
+terminal PALAVRA_SE: 'Se';
 
 // Espaços em branco e comentários
 hidden terminal ESPACO: /\s+/;
@@ -771,12 +794,12 @@ terminal STRING:
 terminal PONTO_FINAL: '.';
 terminal VIRGULA: ',';
 terminal PONTO_E_VIRGULA: ';';
-terminal DOIS_PONTOS: ':';
+terminal DOIS_PONTOS: ':'; /*
 terminal ASTERISCO: '*';
 terminal BARRA: '/';
 terminal MENOS: '-';
 terminal MAIS: '+';
-terminal BARRA_INVERTIDA: '\\';
+terminal BARRA_INVERTIDA: '\\'; */
 terminal ABRE_PARENTESES: '(';
 terminal FECHA_PARENTESES: ')';
 
