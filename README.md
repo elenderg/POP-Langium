@@ -1,53 +1,53 @@
-# Servidor de Linguagem para Português Puro
+# Servidor de Linguagem para PortuguÃªs Puro
 
-Este repositório contém a implementação do **Servidor de Linguagens (LSP)** para a linguagem de programação **Português Puro**, construída com **Langium**.
-A estrutura utiliza um workspace monorepo para organizar a gramática, o servidor, a CLI opcional e a extensão para VS Code.
+Este repositÃ³rio contÃ©m a implementaÃ§Ã£o do **Servidor de Linguagens (LSP)** para a linguagem de programaÃ§Ã£o **PortuguÃªs Puro**, construÃ­da com **Langium**.
+A estrutura utiliza um workspace monorepo para organizar a gramÃ¡tica, o servidor, a CLI opcional e a extensÃ£o para VS Code.
 
 ## Estrutura do Workspace
 
-Os pacotes estão presentes no diretório `packages/`.
+Os pacotes estÃ£o presentes no diretÃ³rio `packages/`.
 
-### Pacotes disponíveis
+### Pacotes disponÃ­veis
 
 * **[packages/language](./packages/language/README.md)**
-  Pacote principal. Contém:
+  Pacote principal. ContÃ©m:
 
-  * Gramática da linguagem (arquivo `.langium`)
-  * Construção da AST
-  * Serviços personalizados (validação, formatação, indexação)
-  * Geração de código, caso aplicável
+  * GramÃ¡tica da linguagem (arquivo `.langium`)
+  * ConstruÃ§Ã£o da AST
+  * ServiÃ§os personalizados (validaÃ§Ã£o, formataÃ§Ã£o, indexaÃ§Ã£o)
+  * GeraÃ§Ã£o de cÃ³digo, caso aplicÃ¡vel
 
 * **[packages/cli](./packages/cli/README.md)** *(opcional)*
-  Disponível se a opção CLI foi habilitada na criação do projeto.
+  DisponÃ­vel se a opÃ§Ã£o CLI foi habilitada na criaÃ§Ã£o do projeto.
   Inclui:
 
-  * Executável da linguagem via linha de comando
-  * Funções como validação de arquivos `.pop`, geração de AST, e comandos auxiliares
+  * ExecutÃ¡vel da linguagem via linha de comando
+  * FunÃ§Ãµes como validaÃ§Ã£o de arquivos `.pop`, geraÃ§Ã£o de AST, e comandos auxiliares
 
 * **[packages/extension](./packages/extension/langium-quickstart.md)** *(opcional)*
-  Pacote da extensão do VS Code.
+  Pacote da extensÃ£o do VS Code.
   Inclui:
 
-  * Código do cliente LSP
-  * Configurações da extensão
-  * Ativação e comunicação com o servidor de linguagem
+  * CÃ³digo do cliente LSP
+  * ConfiguraÃ§Ãµes da extensÃ£o
+  * AtivaÃ§Ã£o e comunicaÃ§Ã£o com o servidor de linguagem
 
 ---
 
-## Arquivos na raiz do repositório
+## Arquivos na raiz do repositÃ³rio
 
-Alguns arquivos de configuração ficam diretamente no diretório raiz:
+Alguns arquivos de configuraÃ§Ã£o ficam diretamente no diretÃ³rio raiz:
 
 * **[package.json](./package.json)**
-  Manifesto principal do workspace. Define dependências, scripts e metadados globais.
+  Manifesto principal do workspace. Define dependÃªncias, scripts e metadados globais.
 
 * **[tsconfig.json](./tsconfig.json)**
-  Configuração base do compilador TypeScript para todo o workspace.
+  ConfiguraÃ§Ã£o base do compilador TypeScript para todo o workspace.
 
 * **[tsconfig.build.json](./tsconfig.build.json)**
-  Configuração utilizada especificamente durante o processo de *build* de todos os pacotes.
+  ConfiguraÃ§Ã£o utilizada especificamente durante o processo de *build* de todos os pacotes.
 
 * **[.gitignore](./.gitignore)**
-  Define os arquivos e diretórios ignorados pelo Git.
+  Define os arquivos e diretÃ³rios ignorados pelo Git.
 
 ---

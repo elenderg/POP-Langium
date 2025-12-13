@@ -1,81 +1,81 @@
-# Pacote da Linguagem (ObrigatÛrio)
+# Pacote da Linguagem (Obrigat√≥rio)
 
-Este pacote contÈm a definiÁ„o central da linguagem **PortuguÍs Puro** e todos os componentes necess·rios para que o Langium gere a gram·tica, a AST, os serviÁos padr„o e as extensıes especÌficas da linguagem.
+Este pacote cont√©m a defini√ß√£o central da linguagem **Portugu√™s Puro** e todos os componentes necess√°rios para que o Langium gere a gram√°tica, a AST, os servi√ßos padr√£o e as extens√µes espec√≠ficas da linguagem.
 
 Para compreender o fluxo completo de desenvolvimento com Langium, consulte o guia oficial:
 [https://langium.org/docs/learn/workflow/write_grammar/](https://langium.org/docs/learn/workflow/write_grammar/)
 
 ---
 
-## Conte˙do do diretÛrio
+## Conte√∫do do diret√≥rio
 
-### Arquivos de ConfiguraÁ„o
+### Arquivos de Configura√ß√£o
 
 * **[package.json](./package.json)**
-  Manifesto do pacote da linguagem. Define dependÍncias, scripts de build e metadados locais.
+  Manifesto do pacote da linguagem. Define depend√™ncias, scripts de build e metadados locais.
 
 * **[tsconfig.json](./tsconfig.json)**
-  ConfiguraÁ„o de TypeScript especÌfica deste pacote. Estende o arquivo de configuraÁ„o base localizado na raiz do workspace.  [base config](../../tsconfig.json)
+  Configura√ß√£o de TypeScript espec√≠fica deste pacote. Estende o arquivo de configura√ß√£o base localizado na raiz do workspace.  [base config](../../tsconfig.json)
 
 ---
 
 ### Fontes da Linguagem
 
 * **[src/portugues-puro.langium](src/portugues-puro.langium)**
-  Arquivo de gram·tica da linguagem PortuguÍs Puro.
-  Define regras sint·ticas, estrutura da AST, keywords, tokens e a forma geral de todos os constructos da linguagem.
+  Arquivo de gram√°tica da linguagem Portugu√™s Puro.
+  Define regras sint√°ticas, estrutura da AST, keywords, tokens e a forma geral de todos os constructos da linguagem.
 
 * **[src/portugues-puro-module.ts](src/portugues-puro-module.ts)**
-  MÛdulo de injeÁ„o de dependÍncias da linguagem.
-  Use este arquivo para registrar serviÁos personalizados, substituir implementaÁıes padr„o e configurar extensıes como validaÁ„o, indexaÁ„o e completions.
+  M√≥dulo de inje√ß√£o de depend√™ncias da linguagem.
+  Use este arquivo para registrar servi√ßos personalizados, substituir implementa√ß√µes padr√£o e configurar extens√µes como valida√ß√£o, indexa√ß√£o e completions.
 
 * **[src/portugues-puro-validator.ts](src/portugues-puro-validator.ts)**
   Exemplo de validador.
-  Deve ser adaptado para implementar as regras sem‚nticas reais da linguagem PortuguÍs Puro (por exemplo: checagem de tipos, escopos, uso de identificadores, etc.).
+  Deve ser adaptado para implementar as regras sem√¢nticas reais da linguagem Portugu√™s Puro (por exemplo: checagem de tipos, escopos, uso de identificadores, etc.).
 
 * **[src/index.ts](src/index.ts)**
-  Define o que È exportado por este pacote.
-  Pacotes como a CLI ou a extens„o do VS Code consomem estes exports para inicializar o servidor de linguagem.
+  Define o que √© exportado por este pacote.
+  Pacotes como a CLI ou a extens√£o do VS Code consomem estes exports para inicializar o servidor de linguagem.
 
 ---
 
 ### Arquivos Gerados pelo Langium
 
-Estes arquivos s„o recriados quando o comando `langium generate` È executado.
+Estes arquivos s√£o recriados quando o comando `langium generate` √© executado.
 
 * **[src/generated/ast.ts](src/generated/ast.ts)**
-  RepresentaÁ„o tipada da AST resultante da gram·tica.
+  Representa√ß√£o tipada da AST resultante da gram√°tica.
 
 * **[src/generated/grammar.ts](src/generated/grammar.ts)**
-  Vers„o program·tica da gram·tica em formato JavaScript/TypeScript, utilizada internamente pelo parser.
+  Vers√£o program√°tica da gram√°tica em formato JavaScript/TypeScript, utilizada internamente pelo parser.
 
 * **[src/generated/module.ts](src/generated/module.ts)**
-  DeclaraÁ„o autom·tica dos serviÁos b·sicos da linguagem, que pode ser estendida no mÛdulo personalizado.
+  Declara√ß√£o autom√°tica dos servi√ßos b√°sicos da linguagem, que pode ser estendida no m√≥dulo personalizado.
 
 ---
 
 ### Realce de Sintaxe
 
 * **[src/syntaxes/portugues-puro.monarch.ts](src/syntaxes/portugues-puro.monarch.ts)**
-  DefiniÁ„o de realce Monarch, usada por editores que suportam esse formato (incluindo a extens„o VS Code).
+  Defini√ß√£o de realce Monarch, usada por editores que suportam esse formato (incluindo a extens√£o VS Code).
 
 * **[syntaxes/portugues-puro.tmLanguage.json](syntaxes/portugues-puro.tmLanguage.json)**
-  DefiniÁ„o de sintaxe TextMate, utilizada para temas e realce avanÁado.
+  Defini√ß√£o de sintaxe TextMate, utilizada para temas e realce avan√ßado.
 
 ---
 
-## Arquivos de Teste (se a opÁ„o de testes foi selecionada)
+## Arquivos de Teste (se a op√ß√£o de testes foi selecionada)
 
 * **[tsconfig.test.json](./tsconfig.test.json)**
-  ConfiguraÁ„o TypeScript especÌfica para testes.
+  Configura√ß√£o TypeScript espec√≠fica para testes.
 
 * **[test/linking.test.ts](test/linking.test.ts)**
-  Testes voltados para resoluÁ„o de sÌmbolos, escopos e linking.
+  Testes voltados para resolu√ß√£o de s√≠mbolos, escopos e linking.
 
 * **[test/parsing.test.ts](test/parsing.test.ts)**
-  Testes de parsing, cobrindo regras gramaticais b·sicas e casos limÌtrofes.
+  Testes de parsing, cobrindo regras gramaticais b√°sicas e casos lim√≠trofes.
 
 * **[test/validating.test.ts](test/validating.test.ts)**
-  Testes de validaÁ„o sem‚ntica da linguagem.
+  Testes de valida√ß√£o sem√¢ntica da linguagem.
 
 ---
