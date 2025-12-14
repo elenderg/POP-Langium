@@ -406,12 +406,10 @@ DeclaracaoDeVariavelGlobalComTipoEstruturado:
 // ============================================================================
 
 DeclaracaoDeTipo:
-  (  DeclaracaoDeTipoSimples
+  ( DeclaracaoDeTipoSimples
   | DeclaracaoDePonteiro
   | DeclaracaoDeTipoEscalar 
-  )
-  PONTO_FINAL
-  ;
+  ) PONTO_FINAL;
 
 DeclaracaoDeTipoSimples:
   ArtigoIndefinido
@@ -419,8 +417,7 @@ DeclaracaoDeTipoSimples:
   OperadorDeAtribuicao
   ArtigoIndefinido
   NomeDoTipoBase=[DeclaracaoDeTipo:IDENTIFICADOR]
-  ('com' ListaDeCampos+=Campo)?
-  ;
+  ('com' ListaDeCampos+=Campo)?;
 
 DeclaracaoDePonteiro:
   ArtigoIndefinido
@@ -438,16 +435,7 @@ DeclaracaoDeTipoEscalar:
   NomeDoTipoEscalar=Identificador
   OperadorDeAtribuicao
   FatorDeEscala=NumeroLiteral
-  TipoBase=Identificador  
-  ;
-
-DeclaracaoDeTipoEstruturado:
-  ArtigoIndefinido
-  NomeDoTipoDerivado=Identificador
-  OperadorDeAtribuicao
-  ArtigoIndefinido
   NomeDoTipoBase=[DeclaracaoDeTipo:IDENTIFICADOR]
-  ('com' ListaDeCampos+=Campo)?
   ;
 
 
@@ -457,7 +445,7 @@ Campo:
 
 CampoComum:
   ArtigoIndefinido
-  TipoBase=Identificador
+  TipoBase=[DeclaracaoDeTipo:IDENTIFICADOR]
   (
     Denominacao
     NomeDoCampo=Identificador
@@ -469,7 +457,7 @@ CampoComum:
 Sobreposicao:
   'sob'
   ArtigoDefinido
-  CampoBase=Identificador
+  CampoSobreposto=[DeclaracaoDeTipo:IDENTIFICADOR]
 ;
 
 ArrayDeBytes: 
