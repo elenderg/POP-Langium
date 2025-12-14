@@ -382,6 +382,8 @@ DeclaracaoDeVariavelGlobalComTipoEstruturado:
 // DECLARAÇÃO DE TIPOS
 // ============================================================================
 
+
+// todo: inserir uniões
 DeclaracaoDeTipo:
   ( DeclaracaoDeTipoSimples
   | DeclaracaoDePonteiro

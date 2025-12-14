@@ -1,5 +1,21 @@
 grammar PortuguesPuro
 
+// ============================================================================
+// INTERFACES SEMÂNTICAS
+// ============================================================================
+
+interface ElementoNomeado {
+  name: string
+}
+
+interface TipoSimbolo extends ElementoNomeado{}
+interface VariavelSimbolo extends ElementoNomeado{}
+interface RotinaSimbolo extends ElementoNomeado{}
+
+// ============================================================================
+// PROGRAMA
+// ============================================================================
+
 entry Programa:
   (
       DeclaracoesDeTipos+=DeclaracaoDeTipo
@@ -7,6 +23,9 @@ entry Programa:
     | ImplementacaoDeRotinas_e_Funcoes+=Rotinas_e_Funcoes
   )+
   ;
+
+
+
 
 // ============================================================================
 // ROTINAS, FUNÇÕES BOOLIANAS E FUNÇÕES DE CAMPOS CALCULADOS
@@ -74,7 +93,7 @@ CabecalhoPrincipalDaFuncaoComputadora:
   EstruturaPrincipal=Identificador  
   'para'
   ArtigoIndefinido
-  TipoAlvo=Identificador
+  TipoAlvo=[TipoSimbolo:IDENTIFICADOR]
   DOIS_PONTOS
   ;
 
@@ -90,7 +109,7 @@ CabecalhoAlternativoDaFuncaoComputadora:
   EstruturaPrincipal=Identificador
   'para'
   ArtigoIndefinido
-  TipoAlvo=Identificador
+  TipoAlvo=[TipoSimbolo:IDENTIFICADOR]
   PONTO_E_VIRGULA
   ;
 
@@ -167,6 +186,10 @@ AvaliacaoCondicional:
   VIRGULA
   BlocoCondicional
   ;
+
+// ============================================================================
+// CABEÇALHOS
+// ============================================================================
 
 CabecalhoComDoisPontos:
   NomeDaRotina=Identificador
@@ -385,8 +408,7 @@ DeclaracaoDeVariavelGlobalComTipoEstruturado:
 DeclaracaoDeTipo:
   (  DeclaracaoDeTipoSimples
   | DeclaracaoDePonteiro
-  | DeclaracaoDeTipoEscalar
-  | DeclaracaoDeTipoEstruturado
+  | DeclaracaoDeTipoEscalar 
   )
   PONTO_FINAL
   ;
@@ -396,7 +418,8 @@ DeclaracaoDeTipoSimples:
   NomeDoTipoDerivado=Identificador
   OperadorDeAtribuicao
   ArtigoIndefinido
-  NomeDoTipoBase=Identificador
+  NomeDoTipoBase=[DeclaracaoDeTipo:IDENTIFICADOR]
+  ('com' ListaDeCampos+=Campo)?
   ;
 
 DeclaracaoDePonteiro:
@@ -419,9 +442,12 @@ DeclaracaoDeTipoEscalar:
   ;
 
 DeclaracaoDeTipoEstruturado:
-  DeclaracaoDeTipoSimples
-  'com'
-  ListaDeCampos+=Campo  
+  ArtigoIndefinido
+  NomeDoTipoDerivado=Identificador
+  OperadorDeAtribuicao
+  ArtigoIndefinido
+  NomeDoTipoBase=[DeclaracaoDeTipo:IDENTIFICADOR]
+  ('com' ListaDeCampos+=Campo)?
   ;
 
 
@@ -436,8 +462,15 @@ CampoComum:
     Denominacao
     NomeDoCampo=Identificador
   )?
+  Sobreposicao?
   (referencia='(referência)')?  
   ;
+
+Sobreposicao:
+  'sob'
+  ArtigoDefinido
+  CampoBase=Identificador
+;
 
 ArrayDeBytes: 
   NumeroLiteral 
