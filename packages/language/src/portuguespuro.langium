@@ -354,51 +354,26 @@ Artigo returns string:
 // DECLARAÇÃO DE VARIÁVEIS GLOBAIS
 // ============================================================================
 
-DeclaracaoDeVariavelGlobal: 
-    DeclaracaoDeVariavelGlobalComTipoSimples
-  | DeclaracaoDeVariavelGlobalComTipoComInicializacao
-  | DeclaracaoDeVariavelGlobalSemTipoComInicializacao
-  | DeclaracaoDeVariavelGlobalComTipoEstruturado
-  ;
-
-DeclaracaoDeVariavelGlobalComTipoSimples:
-  ArtigoDefinido
-  NomeDaVariavelGlobal=Identificador
-  OperadorDeAtribuicao
-  ArtigoIndefinido
-  NomeDoTipoBase=Identificador
-  PONTO_FINAL
-  ;
-
-DeclaracaoDeVariavelGlobalComTipoComInicializacao:
-  ArtigoDefinido
-  NomeDaVariavelGlobal=Identificador
-  OperadorDeAtribuicao
-  ArtigoIndefinido
-  NomeDoTipoBase=Identificador
-  'igual'
-  'a'
-  ValorDaVariavel=ValorLiteral
-  PONTO_FINAL
-  ;
-
-DeclaracaoDeVariavelGlobalSemTipoComInicializacao:
-  ArtigoDefinido
-  NomeDaVariavelGlobal=Identificador
-  OperadorDeAtribuicao  
-  ValorDaVariavel=ValorLiteral
-  PONTO_FINAL
-  ;
-
-DeclaracaoDeVariavelGlobalComTipoEstruturado:
-  ArtigoDefinido
-  NomeDaVariavelGlobal=Identificador
-  OperadorDeAtribuicao
-  ArtigoIndefinido
-  NomeDoTipoBase=Identificador
-  'com'
-  ListaDeCampos+=Campo
-  PONTO_FINAL
+DeclaracaoDeVariavelGlobal:
+    ArtigoDefinido
+    NomeDaVariavelGlobal=Identificador
+    OperadorDeAtribuicao
+  (    
+    ArtigoIndefinido
+    NomeDoTipoBase=[DeclaracaoDeTipo:IDENTIFICADOR]
+    (
+      'igual' 'a' 
+      ValorDaVariavel=ValorLiteral
+    )?    
+  |    
+    ValorDaVariavel=ValorLiteral    
+  |    
+    ArtigoIndefinido
+    NomeDoTipoBase=[DeclaracaoDeTipo:IDENTIFICADOR]
+    'com'
+    ListaDeCampos+=Campo    
+  )
+    PONTO_FINAL
   ;
 
 // ============================================================================
@@ -406,36 +381,24 @@ DeclaracaoDeVariavelGlobalComTipoEstruturado:
 // ============================================================================
 
 DeclaracaoDeTipo:
-  ( DeclaracaoDeTipoSimples
-  | DeclaracaoDePonteiro
-  | DeclaracaoDeTipoEscalar 
-  ) PONTO_FINAL;
-
-DeclaracaoDeTipoSimples:
   ArtigoIndefinido
   NomeDoTipoDerivado=Identificador
-  OperadorDeAtribuicao
-  ArtigoIndefinido
-  NomeDoTipoBase=[DeclaracaoDeTipo:IDENTIFICADOR]
-  ('com' ListaDeCampos+=Campo)?;
-
-DeclaracaoDePonteiro:
-  ArtigoIndefinido
-  NomeDoTipoDerivado=Identificador
-  OperadorDeAtribuicao
-  ArtigoIndefinido
-  NomeDoTipoBase='ponteiro'
-  'para'
-  ArtigoIndefinido
-  NomeDoTipoApontado=Identificador  
-  ;
-
-DeclaracaoDeTipoEscalar:
-  ArtigoIndefinido
-  NomeDoTipoEscalar=Identificador
-  OperadorDeAtribuicao
-  FatorDeEscala=NumeroLiteral
-  NomeDoTipoBase=[DeclaracaoDeTipo:IDENTIFICADOR]
+  OperadorDeAtribuicao  
+  (
+    ArtigoIndefinido
+    NomeDoTipoBase=[DeclaracaoDeTipo:IDENTIFICADOR]
+    ('com' ListaDeCampos+=Campo)?
+  |  
+    ArtigoIndefinido
+    NomeDoTipoBase=[DeclaracaoDeTipo:'ponteiro']
+    'para'
+    ArtigoIndefinido
+    NomeDoTipoApontado=Identificador
+  |    
+    FatorDeEscala=NumeroLiteral
+    NomeDoTipoBase=[DeclaracaoDeTipo:IDENTIFICADOR]  
+  )
+    PONTO_FINAL
   ;
 
 
