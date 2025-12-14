@@ -11,6 +11,9 @@ interface ElementoNomeado {
 interface TipoSimbolo extends ElementoNomeado{}
 interface VariavelSimbolo extends ElementoNomeado{}
 interface RotinaSimbolo extends ElementoNomeado{}
+interface Literal {
+  valor: ValorLiteral
+}
 
 // ============================================================================
 // PROGRAMA
@@ -25,6 +28,110 @@ entry Programa:
   ;
 
 
+// ============================================================================
+// DECLARAÇÃO DE TIPOS
+// ============================================================================
+
+DeclaracaoDeTipo:
+  ArtigoIndefinido
+  NomeDoTipoDerivado=Identificador
+  OperadorDeAtribuicao  
+  (
+    ArtigoIndefinido
+    NomeDoTipoBase=[TipoSimbolo:IDENTIFICADOR]
+    ('com' ListaDeCampos+=Campo)?
+  |  
+    ArtigoIndefinido
+    NomeDoTipoBase=[TipoSimbolo:'ponteiro']
+    'para'
+    ArtigoIndefinido
+    NomeDoTipoApontado=Identificador
+  |    
+    FatorDeEscala=NumeroLiteral
+    NomeDoTipoBase=[TipoSimbolo:IDENTIFICADOR]  
+  )
+    PONTO_FINAL
+  ;
+
+Campo:
+  (CampoComum | ArrayDeBytes) Pausa?
+;
+
+CampoComum:
+  ArtigoIndefinido
+  TipoBase=[DeclaracaoDeTipo:IDENTIFICADOR]
+  (
+    Denominacao
+    NomeDoCampo=Identificador
+  )?
+  Sobreposicao?
+  (referencia='(referência)')?  
+  ;
+
+Sobreposicao:
+  'sob'
+  ArtigoDefinido
+  CampoSobreposto=Identificador
+;
+
+ArrayDeBytes: 
+  NumeroLiteral 
+  TipoBase=
+  (
+      'byte' 
+    | 'bytes'
+  )
+  (
+    Denominacao
+    NomeDoCampo=Identificador
+  )?
+  Sobreposicao?
+  (referencia='(referência)')?  
+  ;
+
+Pausa returns string:
+    ConjuncoesComuns 
+  | VIRGULA
+  ;
+
+Denominacao returns string:
+    'denominado'
+  | 'denominada'
+  | 'denominados'
+  | 'denominadas'
+  ;
+
+OperadorDeAtribuicao returns string:
+    PALAVRA_EH
+  | PALAVRA_SAO
+  ;
+
+// ============================================================================
+// DECLARAÇÃO DE VARIÁVEIS GLOBAIS
+// ============================================================================
+
+DeclaracaoDeVariavelGlobal:
+    ArtigoDefinido
+    NomeDaVariavelGlobal=[VariavelSimbolo:IDENTIFICADOR]
+    OperadorDeAtribuicao
+  (    
+    ArtigoIndefinido
+    NomeDoTipoBase=[TipoSimbolo:IDENTIFICADOR]
+    (
+      'igual' 'a' 
+      ValorDaVariavel=ValorLiteral
+    )?    
+  |    
+    ValorDaVariavel=ValorLiteral    
+  |    
+    ArtigoIndefinido
+    NomeDoTipoBase=[TipoSimbolo:IDENTIFICADOR]
+    'com'
+    ListaDeCampos+=Campo    
+  )
+    PONTO_FINAL
+  ;
+
 
 
 // ============================================================================
@@ -37,12 +144,20 @@ Rotinas_e_Funcoes:
   ;
 
 CabecalhosDeRotinas_e_Funcoes:
+  ( 
+    CabecalhosAlternativosDaRotina+=CabecalhoAlternativoDaRotina* 
     CabecalhoPrincipalDaRotina
-  | CabecalhoAlternativoDaRotina
-  | CabecalhoPrincipalDaFuncaoBooliana
-  | CabecalhoAlternativoDaFuncaoBooliana
-  | CabecalhoPrincipalDaFuncaoComputadora
-  | CabecalhoAlternativoDaFuncaoComputadora
+  )
+  | 
+  ( 
+    CabecalhosAlternativosDaFuncaoBooliana+=CabecalhoAlternativoDaFuncaoBooliana* 
+    CabecalhoPrincipalDaFuncaoBooliana
+  )
+  | 
+  ( 
+    CabecalhosAlternativosDaFuncaoComputadora+=CabecalhoAlternativoDaFuncaoComputadora*
+    CabecalhoPrincipalDaFuncaoComputadora
+  )
   ;
 
 CabecalhoPrincipalDaRotina:
@@ -350,105 +465,6 @@ Artigo returns string:
     ArtigoDefinido 
   | ArtigoIndefinido;
 
-// ============================================================================
-// DECLARAÇÃO DE VARIÁVEIS GLOBAIS
-// ============================================================================
-
-DeclaracaoDeVariavelGlobal:
-    ArtigoDefinido
-    NomeDaVariavelGlobal=Identificador
-    OperadorDeAtribuicao
-  (    
-    ArtigoIndefinido
-    NomeDoTipoBase=[DeclaracaoDeTipo:IDENTIFICADOR]
-    (
-      'igual' 'a' 
-      ValorDaVariavel=ValorLiteral
-    )?    
-  |    
-    ValorDaVariavel=ValorLiteral    
-  |    
-    ArtigoIndefinido
-    NomeDoTipoBase=[DeclaracaoDeTipo:IDENTIFICADOR]
-    'com'
-    ListaDeCampos+=Campo    
-  )
-    PONTO_FINAL
-  ;
-
-// ============================================================================
-// DECLARAÇÃO DE TIPOS
-// ============================================================================
-
-DeclaracaoDeTipo:
-  ArtigoIndefinido
-  NomeDoTipoDerivado=Identificador
-  OperadorDeAtribuicao  
-  (
-    ArtigoIndefinido
-    NomeDoTipoBase=[DeclaracaoDeTipo:IDENTIFICADOR]
-    ('com' ListaDeCampos+=Campo)?
-  |  
-    ArtigoIndefinido
-    NomeDoTipoBase=[DeclaracaoDeTipo:'ponteiro']
-    'para'
-    ArtigoIndefinido
-    NomeDoTipoApontado=Identificador
-  |    
-    FatorDeEscala=NumeroLiteral
-    NomeDoTipoBase=[DeclaracaoDeTipo:IDENTIFICADOR]  
-  )
-    PONTO_FINAL
-  ;
-
-
-Campo:
-  (CampoComum | ArrayDeBytes) Pausa?
-;
-
-CampoComum:
-  ArtigoIndefinido
-  TipoBase=[DeclaracaoDeTipo:IDENTIFICADOR]
-  (
-    Denominacao
-    NomeDoCampo=Identificador
-  )?
-  Sobreposicao?
-  (referencia='(referência)')?  
-  ;
-
-Sobreposicao:
-  'sob'
-  ArtigoDefinido
-  CampoSobreposto=[DeclaracaoDeTipo:IDENTIFICADOR]
-;
-
-ArrayDeBytes: 
-  NumeroLiteral 
-  TipoBase=(
-      'byte' 
-    | 'bytes'
-    )
-  ;
-
-Pausa returns string:
-    ConjuncoesComuns 
-  | VIRGULA
-  ;
-
-
-Denominacao returns string:
-    'denominado'
-  | 'denominada'
-  | 'denominados'
-  | 'denominadas'
-  ;
-
-
-OperadorDeAtribuicao returns string:
-    PALAVRA_EH
-  | PALAVRA_SAO
-  ;
 
 Contracao returns string:
     'à'     // para a
