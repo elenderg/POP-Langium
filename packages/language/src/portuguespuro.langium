@@ -11,9 +11,11 @@ interface ElementoNomeado {
 interface TipoSimbolo extends ElementoNomeado{}
 interface VariavelSimbolo extends ElementoNomeado{}
 interface RotinaSimbolo extends ElementoNomeado{}
+/*
 interface Literal {
+  nome_interno: string;
   valor: ValorLiteral
-}
+}*/
 
 // ============================================================================
 // PROGRAMA
@@ -132,8 +134,6 @@ DeclaracaoDeVariavelGlobal:
     PONTO_FINAL
   ;
 
-
-
 // ============================================================================
 // ROTINAS, FUNÇÕES BOOLIANAS E FUNÇÕES DE CAMPOS CALCULADOS
 // ============================================================================
@@ -165,7 +165,7 @@ CabecalhoPrincipalDaRotina:
   'para'
   'que'
   PALAVRA_SE
-  Cabecalho=CabecalhoComDoisPontos  
+  Cabecalho=[CabecalhoComDoisPontos:IDENTIFICADOR]
   ;
 
 CabecalhoAlternativoDaRotina:
@@ -173,7 +173,7 @@ CabecalhoAlternativoDaRotina:
   'para'
   'que'
   PALAVRA_SE
-  Cabecalho=CabecalhoComPontoEVirgula
+  Cabecalho=[CabecalhoComPontoEVirgula:IDENTIFICADOR]
   ;
 
 CabecalhoPrincipalDaFuncaoBooliana:
@@ -183,7 +183,7 @@ CabecalhoPrincipalDaFuncaoBooliana:
   PALAVRA_SE
   'determine'
   PALAVRA_SE
-  Cabecalho=CabecalhoComDoisPontos  
+  Cabecalho=[CabecalhoComDoisPontos:IDENTIFICADOR]  
   ;
 
 CabecalhoAlternativoDaFuncaoBooliana:
@@ -193,7 +193,7 @@ CabecalhoAlternativoDaFuncaoBooliana:
   PALAVRA_SE
   'determine'
   PALAVRA_SE
-  Cabecalho=CabecalhoComPontoEVirgula
+  Cabecalho=[CabecalhoComPontoEVirgula:IDENTIFICADOR]
   ;
 
 CabecalhoPrincipalDaFuncaoComputadora:
@@ -203,9 +203,9 @@ CabecalhoPrincipalDaFuncaoComputadora:
   PALAVRA_SE
   'atribua'
   ArtigoDefinido
-  CampoCalculado=Identificador
+  CampoCalculado=[RotinaSimbolo:IDENTIFICADOR]
   PossessivoAbrangente
-  EstruturaPrincipal=Identificador  
+  EstruturaPrincipal=[TipoSimbolo:IDENTIFICADOR]
   'para'
   ArtigoIndefinido
   TipoAlvo=[TipoSimbolo:IDENTIFICADOR]
@@ -228,12 +228,54 @@ CabecalhoAlternativoDaFuncaoComputadora:
   PONTO_E_VIRGULA
   ;
 
+
+// ============================================================================
+// CABEÇALHOS
+// ============================================================================
+
+CabecalhoComDoisPontos:
+  NomeDaRotina=Identificador
+  (
+    ListaDeParametros+=Parametros
+  )?
+  (Qualificador)?
+  DOIS_PONTOS
+  ;
+
+CabecalhoComPontoEVirgula:
+  NomeDaRotina=Identificador
+  (
+    ListaDeParametros+=Parametros
+  )?
+  (Qualificador)?
+  PONTO_E_VIRGULA
+  ;
+
 PossessivoAbrangente returns string:
     'dum'
   | 'duns'  
   | 'duma'
   | 'dumas'
   ;
+
+Parametros:
+  Complemento+=Complementos*
+  ArtigoIndefinido 
+  TipoDoParametro=Identificador
+  (Denominacao NomeDoParametro=Identificador)?
+  Complemento+=(Complementos|ArtigoDefinido|Contracao)*
+  ;
+
+Complementos:
+  (
+      Preposicao
+    | Conjuncao    
+    | PronomeRelativo
+    | AdverbioIgnoravel
+    | VerboAuxiliar=Verbos    
+  )
+  ;
+
 
 Qualificador:
   ABRE_PARENTESES
@@ -302,28 +344,6 @@ AvaliacaoCondicional:
   BlocoCondicional
   ;
 
-// ============================================================================
-// CABEÇALHOS
-// ============================================================================
-
-CabecalhoComDoisPontos:
-  NomeDaRotina=Identificador
-  (
-    ListaDeParametros+=Parametros
-  )?
-  (Qualificador)?
-  DOIS_PONTOS
-  ;
-
-CabecalhoComPontoEVirgula:
-  NomeDaRotina=Identificador
-  (
-    ListaDeParametros+=Parametros
-  )?
-  (Qualificador)?
-  PONTO_E_VIRGULA
-  ;
-
 InvocacaoInterna:
   NomeDaRotina=Identificador
   Complemento+=Complementos*
@@ -358,23 +378,6 @@ Argumentos:
   Modificador+=ExpressaoAlgebrica*
   ;
 
-Parametros:
-  Complemento+=Complementos*
-  ArtigoIndefinido 
-  TipoDoParametro=Identificador
-  (Denominacao NomeDoParametro=Identificador)?
-  Complemento+=(Complementos|ArtigoDefinido|Contracao)*
-  ;
-
-Complementos:
-  (
-      Preposicao
-    | Conjuncao    
-    | PronomeRelativo
-    | AdverbioIgnoravel
-    | VerboAuxiliar=Verbos    
-  )
-  ;
 
 
 BlocoCondicional:
@@ -524,15 +527,14 @@ OperadorDeCoercaoDeTipo returns string:
   // Exemplo: o número tal qual um byte
    'tal' ('como'|'qual');
 
-ValorLiteral: 
-  StringLiteral
+ValorLiteral:  
+  ( StringLiteral
   | NumeroLiteral 
   | FracaoLiteral
   | NumeroMistoLiteral
   | HexadecimalLiteral
   | BoolianoLiteral
-  | PonteiroLiteral
-  ;
+  | PonteiroLiteral );
 
 StringLiteral: texto=STRING;
 
