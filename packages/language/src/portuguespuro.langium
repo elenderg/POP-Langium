@@ -165,7 +165,7 @@ CabecalhoPrincipalDaRotina:
   'para'
   'que'
   PALAVRA_SE
-  Cabecalho=[CabecalhoComDoisPontos:IDENTIFICADOR]
+  Cabecalho=CabecalhoComDoisPontos // era [CabecalhoComDoisPontos:IDENTIFICADOR]
   ;
 
 CabecalhoAlternativoDaRotina:
@@ -173,7 +173,7 @@ CabecalhoAlternativoDaRotina:
   'para'
   'que'
   PALAVRA_SE
-  Cabecalho=[CabecalhoComPontoEVirgula:IDENTIFICADOR]
+  Cabecalho=CabecalhoComPontoEVirgula // era[CabecalhoComPontoEVirgula:IDENTIFICADOR]
   ;
 
 CabecalhoPrincipalDaFuncaoBooliana:
@@ -183,7 +183,7 @@ CabecalhoPrincipalDaFuncaoBooliana:
   PALAVRA_SE
   'determine'
   PALAVRA_SE
-  Cabecalho=[CabecalhoComDoisPontos:IDENTIFICADOR]  
+  Cabecalho=CabecalhoComDoisPontos // era [CabecalhoComDoisPontos:IDENTIFICADOR]  
   ;
 
 CabecalhoAlternativoDaFuncaoBooliana:
@@ -193,7 +193,7 @@ CabecalhoAlternativoDaFuncaoBooliana:
   PALAVRA_SE
   'determine'
   PALAVRA_SE
-  Cabecalho=[CabecalhoComPontoEVirgula:IDENTIFICADOR]
+  Cabecalho=CabecalhoComPontoEVirgula // era [CabecalhoComPontoEVirgula:IDENTIFICADOR]
   ;
 
 CabecalhoPrincipalDaFuncaoComputadora:
@@ -251,19 +251,19 @@ CabecalhoComPontoEVirgula:
   PONTO_E_VIRGULA
   ;
 
-PossessivoAbrangente returns string:
-    'dum'
-  | 'duns'  
-  | 'duma'
-  | 'dumas'
-  ;
-
 Parametros:
   Complemento+=Complementos*
   ArtigoIndefinido 
   TipoDoParametro=Identificador
   (Denominacao NomeDoParametro=Identificador)?
   Complemento+=(Complementos|ArtigoDefinido|Contracao)*
+  ;
+
+PossessivoAbrangente returns string:
+    'dum'
+  | 'duns'  
+  | 'duma'
+  | 'dumas'
   ;
 
 Complementos:
@@ -368,7 +368,7 @@ Argumentos:
   )  
   (
     Denominacao
-    NomeDoParametro=Identificador
+    NomeDoArgumento=Identificador
   )?  
   (
     OperadorDeCoercaoDeTipo

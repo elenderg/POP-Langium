@@ -170,20 +170,24 @@ AvaliacaoCondicional:
 
 CabecalhoComDoisPontos:
   NomeDaRotina=Identificador
-  (
-    ListaDeParametros+=Parametros
-  )?
+  (ListaDeParametros+=Parametros)?
   (Qualificador)?
   DOIS_PONTOS
   ;
 
 CabecalhoComPontoEVirgula:
   NomeDaRotina=Identificador
-  (
-    ListaDeParametros+=Parametros
-  )?
+  (ListaDeParametros+=Parametros)?
   (Qualificador)?
   PONTO_E_VIRGULA
+  ;
+
+Parametros:
+  Complemento+=Complementos*
+  ArtigoIndefinido 
+  TipoDoParametro=Identificador
+  (Denominacao NomeDoParametro=Identificador)?
+  Complemento+=(Complementos|ArtigoDefinido|Contracao)*
   ;
 
 InvocacaoInterna:
@@ -220,13 +224,7 @@ Argumentos:
   Modificador+=ExpressaoAlgebrica*
   ;
 
-Parametros:
-  Complemento+=Complementos*
-  ArtigoIndefinido 
-  TipoDoParametro=Identificador
-  (Denominacao NomeDoParametro=Identificador)?
-  Complemento+=(Complementos|ArtigoDefinido|Contracao)*
-  ;
+
 
 Complementos:
   (
