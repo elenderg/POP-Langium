@@ -272,7 +272,8 @@ Complementos:
     | Conjuncao    
     | PronomeRelativo
     | AdverbioIgnoravel
-    | VerboAuxiliar=Verbos    
+    | VerboAuxiliar=Verbos
+    | Outros=Identificador  
   )
   ;
 
@@ -779,7 +780,7 @@ hidden terminal OBSERVACAO: /\[[^\]]*\]/;
 
 // Identificador genérico (para abreviações e outros usos)
 terminal IDENTIFICADOR: 
-  /[_a-zA-ZÀ-ÿ][_a-zA-ZÀ-ÿ0-9]*/;
+  /[_a-zA-ZÀ-ÿ#][_a-zA-ZÀ-ÿ0-9#]*/;
 
 // Número inteiro
 terminal INTEIRO returns number: 
