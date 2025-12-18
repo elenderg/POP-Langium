@@ -1,11 +1,141 @@
 grammar PortuguesPuro
 
+// ============================================================================
+// INTERFACES SEMÂNTICAS
+// ============================================================================
+
+interface ElementoNomeado {
+  name: string
+}
+
+interface Tipo{
+  nome: string;
+  tipo_base: string;
+  tipo_estruturado: boolean;
+  campos: Campo[];
+  ponteiro: boolean;
+  tipo_apontado: string;
+  escala: escala;
+}
+
+interface escala{
+  numerador: number;
+  denominador: number
+}
+
+
+interface NomeDoTipo extends ElementoNomeado{}
+interface NomeDoCampo extends ElementoNomeado{}
+interface NomeDaVariavel extends ElementoNomeado{}
+interface NomeDoParametro extends ElementoNomeado{}
+interface NomeDoArgumento extends ElementoNomeado{}
+interface NomeDaRotina extends ElementoNomeado{}
+/*
+interface Literal {
+  nome_interno: string;
+  valor: ValorLiteral
+}*/
+
+// ============================================================================
+// PROGRAMA
+// ============================================================================
+
 entry Programa:
   (
       DeclaracoesDeTipos+=DeclaracaoDeTipo
     | DeclaracoesDeVariaveisGlobais+=DeclaracaoDeVariavelGlobal    
     | ImplementacaoDeRotinas_e_Funcoes+=Rotinas_e_Funcoes
   )+
+  ;
+
+
+// ============================================================================
+// DECLARAÇÃO DE TIPOS
+// ============================================================================
+
+DeclaracaoDeTipo :
+  ARTIGO_INDEFINIDO
+  NomeDoTipoDerivado=NomeComposto
+  OperadorDeAtribuicao  
+  (
+    ARTIGO_INDEFINIDO
+    NomeDoTipoBase=[NomeDoTipo:NomeComposto]
+    ('com' ListaDeCampos+=Campo)?
+  |  
+    ARTIGO_INDEFINIDO
+    NomeDoTipoBase=[NomeDoTipo:'ponteiro']
+    'para'
+    ARTIGO_INDEFINIDO
+    NomeDoTipoApontado=[NomeDoTipo:NomeComposto]
+  |    
+    FatorDeEscala=NumeroLiteral
+    NomeDoTipoBase=[NomeDoTipo:NomeComposto]  
+  )
+    PONTO_FINAL
+  ;
+
+Campo:
+  (CampoComum | ArrayDeBytes)
+  (Denominacao NomeDoCampo=[NomeDoCampo:NomeComposto])?
+  Sobreposicao?
+  (referencia='(referência)')? 
+  Pausa?
+;
+
+CampoComum:
+  ARTIGO_INDEFINIDO
+  TipoBase=[DeclaracaoDeTipo:NomeComposto]
+  ;
+
+ArrayDeBytes: 
+  NumeroLiteral 
+  TipoBase=('byte'|'bytes') 
+  ;
+
+Sobreposicao: 'sob' ARTIGO_DEFINIDO CampoSobreposto=NomeComposto;
+
+
+Pausa returns string:
+    ConjuncoesComuns 
+  | VIRGULA
+  ;
+
+Denominacao returns string:
+    'denominado'
+  | 'denominada'
+  | 'denominados'
+  | 'denominadas'
+  ;
+
+OperadorDeAtribuicao returns string:
+    PALAVRA_EH
+  | PALAVRA_SAO
+  ;
+
+// ============================================================================
+// DECLARAÇÃO DE VARIÁVEIS GLOBAIS
+// ============================================================================
+
+DeclaracaoDeVariavelGlobal:
+    ARTIGO_DEFINIDO
+    NomeDaVariavelGlobal=[NomeDaVariavel:NomeComposto]
+    OperadorDeAtribuicao
+  (    
+    ARTIGO_INDEFINIDO
+    NomeDoTipoBase=[NomeDoTipo:NomeComposto]
+    (
+      'igual' 'a' 
+      ValorDaVariavel=ValorLiteral
+    )?    
+  |    
+    ValorDaVariavel=ValorLiteral    
+  |    
+    ARTIGO_INDEFINIDO
+    NomeDoTipoBase=[NomeDoTipo:NomeComposto]
+    'com'
+    ListaDeCampos+=Campo    
+  )
+    PONTO_FINAL
   ;
 
 // ============================================================================
@@ -18,80 +148,89 @@ Rotinas_e_Funcoes:
   ;
 
 CabecalhosDeRotinas_e_Funcoes:
-    CabecalhoPrincipalDaRotina
-  | CabecalhoAlternativoDaRotina
-  | CabecalhoPrincipalDaFuncaoBooliana
-  | CabecalhoAlternativoDaFuncaoBooliana
-  | CabecalhoPrincipalDaFuncaoComputadora
-  | CabecalhoAlternativoDaFuncaoComputadora
+   (CabecalhosAlternativosDaRotina+=CabecalhoAlternativoDaRotina* CabecalhoPrincipalDaRotina)
+  |(CabecalhosAlternativosDaFuncaoBooliana+=CabecalhoAlternativoDaFuncaoBooliana* CabecalhoPrincipalDaFuncaoBooliana)
+  |(CabecalhosAlternativosDaFuncaoComputadora+=CabecalhoAlternativoDaFuncaoComputadora* CabecalhoPrincipalDaFuncaoComputadora)
   ;
 
 CabecalhoPrincipalDaRotina:
-  PALAVRA_ROTINA?
-  'para'
-  'que'
-  PALAVRA_SE
-  Cabecalho=CabecalhoComDoisPontos  
-  ;
+  ROTINA? 'para''que' SE
+  //Cabecalho=CabecalhoComDoisPontos // era [CabecalhoComDoisPontos:IDENTIFICADOR] [RotinaSimbolo:IDENTIFICADOR]
+  StringDoCabecalho=Cabecalho DOIS_PONTOS;
 
 CabecalhoAlternativoDaRotina:
-  PALAVRA_ROTINA?
-  'para'
-  'que'
-  PALAVRA_SE
-  Cabecalho=CabecalhoComPontoEVirgula
-  ;
+  ROTINA? 'para''que' SE
+  //Cabecalho=CabecalhoComPontoEVirgula // era[CabecalhoComPontoEVirgula:IDENTIFICADOR]
+  StringDoCabecalho=Cabecalho PONTO_E_VIRGULA;
 
 CabecalhoPrincipalDaFuncaoBooliana:
-  'Função'?
-  'para'
-  'que'
-  PALAVRA_SE
-  'determine'
-  PALAVRA_SE
-  Cabecalho=CabecalhoComDoisPontos  
-  ;
+  'Função'? 'para' 'que' SE 'determine' SE
+  //Cabecalho=CabecalhoComDoisPontos // era [CabecalhoComDoisPontos:IDENTIFICADOR]  
+  StringDoCabecalho=Cabecalho DOIS_PONTOS;
 
 CabecalhoAlternativoDaFuncaoBooliana:
-  'Função'?
-  'para'
-  'que'
-  PALAVRA_SE
-  'determine'
-  PALAVRA_SE
-  Cabecalho=CabecalhoComPontoEVirgula
-  ;
+  'Função'? 'para' 'que' SE 'determine' SE
+  //Cabecalho=CabecalhoComPontoEVirgula // era [CabecalhoComPontoEVirgula:IDENTIFICADOR]
+  StringDoCabecalho=Cabecalho PONTO_E_VIRGULA;
 
 CabecalhoPrincipalDaFuncaoComputadora:
-  'Função'?
-  'para'
-  'que'
-  PALAVRA_SE
-  'atribua'
-  ArtigoDefinido
-  CampoCalculado=Identificador
+  'Função'? 'para' 'que' SE 'atribua'
+  ARTIGO_DEFINIDO
+  CampoCalculado=[NomeDaRotina:NomeComposto]
   PossessivoAbrangente
-  EstruturaPrincipal=Identificador  
+  EstruturaPrincipal=[NomeDoTipo:NomeComposto]
+  'para' ARTIGO_INDEFINIDO
+  TipoAlvo=[NomeDoTipo:NomeComposto]
+  DOIS_PONTOS;
+
+CabecalhoAlternativoDaFuncaoComputadora:
+  'Função'? 'para' 'que' SE 'atribua'
+  ARTIGO_DEFINIDO
+  CampoCalculado=NomeComposto
+  PossessivoAbrangente
+  EstruturaPrincipal=NomeComposto
   'para'
-  ArtigoIndefinido
-  TipoAlvo=Identificador
+  ARTIGO_INDEFINIDO
+  TipoAlvo=[NomeDoTipo:NomeComposto]
+  PONTO_E_VIRGULA;
+
+
+// ============================================================================
+// CABEÇALHOS
+// ============================================================================
+
+Cabecalho:
+  NomeDaRotina=[NomeDaRotina:NomeComposto]
+  (
+    ListaDeParametros+=Parametros
+  )?
+  (Qualificador)?  
+  ;
+/*
+CabecalhoComDoisPontos:
+  NomeDaRotina=[RotinaSimbolo:IDENTIFICADOR]
+  (
+    ListaDeParametros+=Parametros
+  )?
+  (Qualificador)?
   DOIS_PONTOS
   ;
 
-CabecalhoAlternativoDaFuncaoComputadora:
-  'Função'?
-  'para'
-  'que'
-  PALAVRA_SE
-  'atribua'
-  ArtigoDefinido
-  CampoCalculado=Identificador
-  PossessivoAbrangente
-  EstruturaPrincipal=Identificador
-  'para'
-  ArtigoIndefinido
-  TipoAlvo=Identificador
+CabecalhoComPontoEVirgula:
+  NomeDaRotina=[RotinaSimbolo:IDENTIFICADOR]
+  (
+    ListaDeParametros+=Parametros
+  )?
+  (Qualificador)?
   PONTO_E_VIRGULA
+  ;
+*/
+Parametros:
+  Complemento+=Complementos*
+  ARTIGO_INDEFINIDO 
+  TipoDoParametro=NomeComposto
+  (Denominacao NomeDoParametro=NomeComposto)?
+  Complemento+=(Complementos|ARTIGO_DEFINIDO|Contracao)*
   ;
 
 PossessivoAbrangente returns string:
@@ -101,9 +240,21 @@ PossessivoAbrangente returns string:
   | 'dumas'
   ;
 
+Complementos:
+  (
+      Preposicao
+    | Conjuncao    
+    | PronomeRelativo
+    | AdverbioIgnoravel
+    | VerboAuxiliar=Verbos
+    | Outros=NomeComposto  
+  )
+  ;
+
+
 Qualificador:
   ABRE_PARENTESES
-  TextoQualificador+=Identificador
+  TextoQualificador+=NomeComposto
   FECHA_PARENTESES
   ;
 
@@ -147,14 +298,14 @@ ClausulaDeDirecionamento:
   Artigo
   NomeDoTipo='ponteiro'
   'para'
-  ArtigoDefinido
-  PALAVRA_ROTINA
+  ARTIGO_DEFINIDO
+  ROTINA
   NomeDaRotina=InvocacaoInterna
   ;
 
 ExpressaoCondicional:    
   Variavel
-  VerboCondicional=(Verbos|Identificador)
+  VerboCondicional=(Verbos|NomeComposto)
   OperadorDeComparacao?
   (Variavel | ValorLiteral)
   |
@@ -162,36 +313,14 @@ ExpressaoCondicional:
 
 
 AvaliacaoCondicional:
-  PALAVRA_SE
+  SE
   ExpressaoCondicional
   VIRGULA
   BlocoCondicional
   ;
 
-CabecalhoComDoisPontos:
-  NomeDaRotina=Identificador
-  (ListaDeParametros+=Parametros)?
-  (Qualificador)?
-  DOIS_PONTOS
-  ;
-
-CabecalhoComPontoEVirgula:
-  NomeDaRotina=Identificador
-  (ListaDeParametros+=Parametros)?
-  (Qualificador)?
-  PONTO_E_VIRGULA
-  ;
-
-Parametros:
-  Complemento+=Complementos*
-  ArtigoIndefinido 
-  TipoDoParametro=Identificador
-  (Denominacao NomeDoParametro=Identificador)?
-  Complemento+=(Complementos|ArtigoDefinido|Contracao)*
-  ;
-
 InvocacaoInterna:
-  NomeDaRotina=Identificador
+  NomeDaRotina=NomeComposto
   Complemento+=Complementos*
   (
     ListaDeArgumentos+=Argumentos
@@ -202,39 +331,27 @@ InvocacaoInterna:
       | AdverbioIgnoravel
       | AdverbioNegacao
     )*
-    Outro+=Identificador
+    Outro+=NomeComposto
   )*
   (Qualificador)?
   ;
 
 Argumentos:  
   (
-      Variavel 
-    | VariavelPrecedidaDeContracao
+    Variavel=(Variavel|VariavelPrecedidaDeContracao)
   )  
   (
     Denominacao
-    NomeDoParametro=Identificador
-  )?  
+    NomeDoArgumento=NomeComposto
+  )?
   (
     OperadorDeCoercaoDeTipo
-    ArtigoIndefinido
-    NomeDoTipo=Identificador
+    ARTIGO_INDEFINIDO
+    NomeDoTipo=NomeComposto
   )
   Modificador+=ExpressaoAlgebrica*
   ;
 
-
-
-Complementos:
-  (
-      Preposicao
-    | Conjuncao    
-    | PronomeRelativo
-    | AdverbioIgnoravel
-    | VerboAuxiliar=Verbos    
-  )
-  ;
 
 
 BlocoCondicional:
@@ -264,14 +381,14 @@ InvocacaoIndireta:
   (
     'retornando'
     Artigo
-    NomeDaVariavel=Identificador
+    NomeDaVariavel=NomeComposto
   )?
   ;
 
 InvocacaoExterna:
   'Processe'
-  NomeDaDLL=STRING
-  NomeDaFuncao=STRING
+  NomeDaDLL=STRING_LITERAL
+  NomeDaFuncao=STRING_LITERAL
   (
     'com'
     ListaDeArgumentos+=ArgumentosEncadeados
@@ -279,7 +396,7 @@ InvocacaoExterna:
   (
     'retornando'
     Artigo
-    NomeDaVariavel=Identificador
+    NomeDaVariavel=NomeComposto
     Modificador+=ExpressaoAlgebrica*
   )?
   ;
@@ -302,19 +419,19 @@ ArgumentosEncadeados:
 
 Variavel:
   Artigo
-  NomeDaVariavel=Identificador
+  NomeDaVariavel=NomeComposto
   (Acessores+=Acessor)*
   ;
 
 VariavelPrecedidaDeContracao:
   Contracao
-  NomeDaVariavel=Identificador
+  NomeDaVariavel=NomeComposto
   (Acessores+=Acessor)*
   ;
 
 Acessor:
   Possessivo 
-  NomeDaEstrutura=Identificador
+  NomeDaEstrutura=NomeComposto
   ;
 
 Possessivo returns string:
@@ -322,149 +439,9 @@ Possessivo returns string:
   | PossessivoAdjacente;
 
 Artigo returns string:
-    ArtigoDefinido 
-  | ArtigoIndefinido;
+    ARTIGO_DEFINIDO 
+  | ARTIGO_INDEFINIDO;
 
-// ============================================================================
-// DECLARAÇÃO DE VARIÁVEIS GLOBAIS
-// ============================================================================
-
-DeclaracaoDeVariavelGlobal: 
-    DeclaracaoDeVariavelGlobalComTipoSimples
-  | DeclaracaoDeVariavelGlobalComTipoComInicializacao
-  | DeclaracaoDeVariavelGlobalSemTipoComInicializacao
-  | DeclaracaoDeVariavelGlobalComTipoEstruturado
-  ;
-
-DeclaracaoDeVariavelGlobalComTipoSimples:
-  ArtigoDefinido
-  NomeDaVariavelGlobal=Identificador
-  OperadorDeAtribuicao
-  ArtigoIndefinido
-  NomeDoTipoBase=Identificador
-  PONTO_FINAL
-  ;
-
-DeclaracaoDeVariavelGlobalComTipoComInicializacao:
-  ArtigoDefinido
-  NomeDaVariavelGlobal=Identificador
-  OperadorDeAtribuicao
-  ArtigoIndefinido
-  NomeDoTipoBase=Identificador
-  'igual'
-  'a'
-  ValorDaVariavel=ValorLiteral
-  PONTO_FINAL
-  ;
-
-DeclaracaoDeVariavelGlobalSemTipoComInicializacao:
-  ArtigoDefinido
-  NomeDaVariavelGlobal=Identificador
-  OperadorDeAtribuicao  
-  ValorDaVariavel=ValorLiteral
-  PONTO_FINAL
-  ;
-
-DeclaracaoDeVariavelGlobalComTipoEstruturado:
-  ArtigoDefinido
-  NomeDaVariavelGlobal=Identificador
-  OperadorDeAtribuicao
-  ArtigoIndefinido
-  NomeDoTipoBase=Identificador
-  'com'
-  ListaDeCampos+=Campo
-  PONTO_FINAL
-  ;
-
-// ============================================================================
-// DECLARAÇÃO DE TIPOS
-// ============================================================================
-
-
-// todo: inserir uniões
-DeclaracaoDeTipo:
-  ( DeclaracaoDeTipoSimples
-  | DeclaracaoDePonteiro
-  | DeclaracaoDeTipoEscalar
-  | DeclaracaoDeTipoEstruturado
-  )
-  PONTO_FINAL
-  ;
-
-DeclaracaoDeTipoSimples:
-  ArtigoIndefinido
-  NomeDoTipoDerivado=Identificador
-  OperadorDeAtribuicao
-  ArtigoIndefinido
-  NomeDoTipoBase=Identificador
-  ;
-
-DeclaracaoDePonteiro:
-  ArtigoIndefinido
-  NomeDoTipoDerivado=Identificador
-  OperadorDeAtribuicao
-  ArtigoIndefinido
-  NomeDoTipoBase='ponteiro'
-  'para'
-  ArtigoIndefinido
-  NomeDoTipoApontado=Identificador  
-  ;
-
-DeclaracaoDeTipoEscalar:
-  ArtigoIndefinido
-  NomeDoTipoEscalar=Identificador
-  OperadorDeAtribuicao
-  FatorDeEscala=NumeroLiteral
-  TipoBase=Identificador  
-  ;
-
-DeclaracaoDeTipoEstruturado:
-  DeclaracaoDeTipoSimples
-  'com'
-  ListaDeCampos+=Campo  
-  ;
-
-
-Campo:
-  (CampoComum | ArrayDeBytes) Pausa?
-;
-
-CampoComum:
-  ArtigoIndefinido
-  TipoBase=Identificador
-  (
-    Denominacao
-    NomeDoCampo=Identificador
-  )?
-  (referencia='(referência)')?  
-  ;
-
-ArrayDeBytes: 
-  NumeroLiteral 
-  TipoBase=(
-      'byte' 
-    | 'bytes'
-    )
-  ;
-
-Pausa returns string:
-    ConjuncoesComuns 
-  | VIRGULA
-  ;
-
-
-Denominacao returns string:
-    'denominado'
-  | 'denominada'
-  | 'denominados'
-  | 'denominadas'
-  ;
-
-
-OperadorDeAtribuicao returns string:
-    PALAVRA_EH
-  | PALAVRA_SAO
-  ;
 
 Contracao returns string:
     'à'     // para a
@@ -524,17 +501,16 @@ OperadorDeCoercaoDeTipo returns string:
   // Exemplo: o número tal qual um byte
    'tal' ('como'|'qual');
 
-ValorLiteral: 
-  StringLiteral
+ValorLiteral:  
+  ( StringLiteral
   | NumeroLiteral 
   | FracaoLiteral
   | NumeroMistoLiteral
   | HexadecimalLiteral
   | BoolianoLiteral
-  | PonteiroLiteral
-  ;
+  | PonteiroLiteral );
 
-StringLiteral: texto=STRING;
+StringLiteral: texto=STRING_LITERAL;
 
 NumeroLiteral: 
   sinal='-'? 
@@ -593,14 +569,19 @@ OperadorAritmetico returns string:
 // ============================================================================
 // ARTIGOS E PRONOMES
 // ============================================================================
-ArtigoIndefinido returns string:
+terminal ARTIGO_INDEFINIDO returns string:
     'um' 
   | 'uns' 
   | 'uma' 
-  | 'umas';
+  | 'umas'
+  | 'esse'
+  | 'essa'
+  | 'esses'
+  | 'essas'
+  ;
 
 
-ArtigoDefinido returns string:
+terminal ARTIGO_DEFINIDO returns string:
     'o' 
   | 'a' 
   | 'os'
@@ -756,29 +737,49 @@ OutrosVerbos returns string:
     'excede'  | 'excedem'  | 'necessita' | 'necessitar' | 'parecer'
   | 'parece'  | 'requer'   | 'supera'    | 'superam'    | 'superar';
 
-
-Identificador: nome=IDENTIFICADOR; 
-// Observação: Esta regra precisa ficar por último, por ser a mais genérica possível.
-
+// Isso permite "grupo data hora" ou "data-hora" de forma controlada
+NomeComposto returns string:  IDENTIFICADOR (ESPACO IDENTIFICADOR)*;
+//Identificador: nome=IDENTIFICADOR; // Aviso: Esta regra precisa ficar por último, por ser a mais genérica possível.
+/*
+NovoIDENTIFICADOR returns string:  
+    FORTE
+    (   FORTE
+      | CONTEXTUAL
+      | ESPECIAL FORTE
+      | ESPECIAL CONTEXTUAL
+    )*
+  ;
+*/
 // ============================================================================
 // TERMINAIS
 // ============================================================================
-
+//terminal FORTE: /[A-Za-zÀ-ÿ#%&@_`~]/; // (podem iniciar e terminar identificadores)
+//terminal CONTEXTUAL: /[0-9 \/-]/; // (nunca iniciam nem terminam identificadores)
+//terminal ESPECIAL:  /[<=>^€‚„…†‡ˆ‰‹‘’“”˜•–—™š›¡¢£¤¥¦«¬®¯°±²³´·¸¹»¼½¾¿§¨©×÷]/; // (podem aparecer, mas nunca adjacentes entre si)
 terminal PALAVRA_EH: 'é';
 terminal PALAVRA_SAO: 'são';
-terminal PALAVRA_ROTINA: 'Rotina';
-terminal PALAVRA_SE: 'Se';
+terminal ROTINA: 'Rotina';
+terminal SE: 'Se';
+//terminal A_ISOLADO: /\bA\b/ | /\ba\b/;
+//terminal E_ISOLADO: /\bE\b/ | /\be\b/;
+//terminal O_ISOLADO: /\bO\b/ | /\bo\b/;
+//cterminal ACENTO_ISOLADO: /\bÀ\b/ | /\bÉ\b/ | /\bé\b/ | /\bá\b/;
+
+terminal IDENTIFICADOR: 
+  /[A-Za-zÀ-ÿ#%&@_`~](?:[A-Za-zÀ-ÿ#%&@_`~]|[0-9\/-]|[<=>^€‚„…†‡ˆ‰‹‘’“”˜•–—™š›¡¢£¤¥¦«¬®¯°±²³´·¸¹»¼½¾¿§¨©×÷][A-Za-zÀ-ÿ#%&@_`~0-9 \/-])*[A-Za-zÀ-ÿ#%&@_`~]/;
 
 // Espaços em branco e comentários
-hidden terminal ESPACO: /\s+/;
+terminal ESPACO: /\s+/;
 // Comentário de linha (uma ou mais barras invertidas)
 hidden terminal COMENTARIO: /\\+[^\r\n]*/;
 // Comentário inline (entre colchetes)
 hidden terminal OBSERVACAO: /\[[^\]]*\]/;
 
-// Identificador genérico (para abreviações e outros usos)
-terminal IDENTIFICADOR: 
-  /[_a-zA-ZÀ-ÿ][_a-zA-ZÀ-ÿ0-9]*/;
+// Identificador antigo genérico (para abreviações e outros usos)
+//terminal IDENTIFICADOR3: /[_a-zA-ZÀ-ÿ#][_a-zA-ZÀ-ÿ0-9#]*/;
+
+
+
 
 // Número inteiro
 terminal INTEIRO returns number: 
@@ -789,8 +790,7 @@ terminal NUMERO_HEXADECIMAL returns string:
   /\$[0-9a-fA-F]+/;
 
 // String literal (entre aspas duplas, com escape "")
-terminal STRING: 
-  /"(""|[^"])*"/;
+terminal STRING_LITERAL: /"(?:""|[^"\r\n])*"/;
 
 terminal PONTO_FINAL: '.';
 terminal VIRGULA: ',';
