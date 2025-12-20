@@ -8,14 +8,14 @@ interface ElementoNomeado {
   name: string
 }
 
-interface Tipo{
+interface tipo{
   nome: string;
   tipo_base: string;
   tipo_estruturado: boolean;
-  campos: Campo[];
+  campos: Campo[]; // TODO: Verificar se é viável a substituiçãode Campo[] por campos_de_estrutura[]
   ponteiro: boolean;
   tipo_apontado: string;
-  escala: escala;
+  escala: escala
 }
 
 interface escala{
@@ -23,12 +23,32 @@ interface escala{
   denominador: number
 }
 
+interface campos_de_estrutura extends tipo{    
+  referencia: boolean;
+  sobreposicao: boolean;
+  array_de_bytes: boolean
+}
+
+interface variavel_global extends tipo{
+  valor: ValorLiteral
+}
+
+interface argumento{
+  tipo: tipo;
+  valor: ValorLiteral  
+}
+
+interface InvocacaoDeRotina{
+  nome:string;
+  argumentos: argumento[]
+}
+
 
 interface NomeDoTipo extends ElementoNomeado{}
 interface NomeDoCampo extends ElementoNomeado{}
 interface NomeDaVariavel extends ElementoNomeado{}
-interface NomeDoParametro extends ElementoNomeado{}
-interface NomeDoArgumento extends ElementoNomeado{}
+interface NomeDoParametro extends tipo{}
+interface NomeDoArgumento extends tipo{}
 interface NomeDaRotina extends ElementoNomeado{}
 /*
 interface Literal {
@@ -53,23 +73,24 @@ entry Programa:
 // DECLARAÇÃO DE TIPOS
 // ============================================================================
 
+// TODO: Fazer com que os tipos 'byte' e 'bytes' sejam reconhecidos como tipos primitivos
 DeclaracaoDeTipo :
   ARTIGO_INDEFINIDO
   NomeDoTipoDerivado=NomeComposto
   OperadorDeAtribuicao  
   (
     ARTIGO_INDEFINIDO
-    NomeDoTipoBase=[NomeDoTipo:NomeComposto]
+    tipo_base=[tipo:NomeComposto] 
     ('com' ListaDeCampos+=Campo)?
   |  
     ARTIGO_INDEFINIDO
-    NomeDoTipoBase=[NomeDoTipo:'ponteiro']
+    tipo_base=[tipo:'ponteiro']
     'para'
     ARTIGO_INDEFINIDO
-    NomeDoTipoApontado=[NomeDoTipo:NomeComposto]
+    tipo_apontado=[tipo:NomeComposto]
   |    
     FatorDeEscala=NumeroLiteral
-    NomeDoTipoBase=[NomeDoTipo:NomeComposto]  
+    tipo_base=[tipo:NomeComposto]  
   )
     PONTO_FINAL
   ;
@@ -84,7 +105,7 @@ Campo:
 
 CampoComum:
   ARTIGO_INDEFINIDO
-  TipoBase=[DeclaracaoDeTipo:NomeComposto]
+  TipoBase=[tipo:NomeComposto]
   ;
 
 ArrayDeBytes: 
@@ -118,11 +139,11 @@ OperadorDeAtribuicao returns string:
 
 DeclaracaoDeVariavelGlobal:
     ARTIGO_DEFINIDO
-    NomeDaVariavelGlobal=[NomeDaVariavel:NomeComposto]
+    NomeDaVariavelGlobal=NomeComposto
     OperadorDeAtribuicao
   (    
     ARTIGO_INDEFINIDO
-    NomeDoTipoBase=[NomeDoTipo:NomeComposto]
+    tipo_base=[tipo:NomeComposto]
     (
       'igual' 'a' 
       ValorDaVariavel=ValorLiteral
@@ -131,7 +152,7 @@ DeclaracaoDeVariavelGlobal:
     ValorDaVariavel=ValorLiteral    
   |    
     ARTIGO_INDEFINIDO
-    NomeDoTipoBase=[NomeDoTipo:NomeComposto]
+    tipo_base=[tipo:NomeComposto]
     'com'
     ListaDeCampos+=Campo    
   )
@@ -173,25 +194,23 @@ CabecalhoAlternativoDaFuncaoBooliana:
   //Cabecalho=CabecalhoComPontoEVirgula // era [CabecalhoComPontoEVirgula:IDENTIFICADOR]
   StringDoCabecalho=Cabecalho PONTO_E_VIRGULA;
 
+
 CabecalhoPrincipalDaFuncaoComputadora:
-  'Função'? 'para' 'que' SE 'atribua'
-  ARTIGO_DEFINIDO
-  CampoCalculado=[NomeDaRotina:NomeComposto]
-  PossessivoAbrangente
-  EstruturaPrincipal=[NomeDoTipo:NomeComposto]
+  'Função'? 'para' 'que' SE 'atribua'  
+  CampoCalculado=NomeComposto
+  Possessivo
+  EstruturaPrincipal=[tipo:NomeComposto]
   'para' ARTIGO_INDEFINIDO
-  TipoAlvo=[NomeDoTipo:NomeComposto]
+  TipoAlvo=[tipo:NomeComposto]
   DOIS_PONTOS;
 
 CabecalhoAlternativoDaFuncaoComputadora:
-  'Função'? 'para' 'que' SE 'atribua'
-  ARTIGO_DEFINIDO
+  'Função'? 'para' 'que' SE 'atribua'  
   CampoCalculado=NomeComposto
-  PossessivoAbrangente
-  EstruturaPrincipal=NomeComposto
-  'para'
-  ARTIGO_INDEFINIDO
-  TipoAlvo=[NomeDoTipo:NomeComposto]
+  Possessivo
+  EstruturaPrincipal=[tipo:NomeComposto]
+  'para' ARTIGO_INDEFINIDO
+  TipoAlvo=[tipo:NomeComposto]
   PONTO_E_VIRGULA;
 
 
