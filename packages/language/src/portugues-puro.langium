@@ -245,10 +245,10 @@ CabecalhoComPontoEVirgula:
   ;
 */
 Parametros:
-  Complemento+=Complementos*
-  ARTIGO_INDEFINIDO 
-  TipoDoParametro=NomeComposto
-  (Denominacao NomeDoParametro=NomeComposto)?
+  Complemento+=(Complementos|ARTIGO_DEFINIDO|Contracao)*  
+  (ARTIGO_INDEFINIDO 
+  tipo_base=[tipo:NomeComposto]
+  (Denominacao NomeDoParametro=NomeComposto)?)
   Complemento+=(Complementos|ARTIGO_DEFINIDO|Contracao)*
   ;
 
@@ -293,20 +293,11 @@ EtapasDaRotina:
   PONTO_FINAL
   ;
 
-ClausulaDeEmpilhamento:
-  'Empilhe'  
-  (Variavel | ValorLiteral)
-  ;
+ClausulaDeEmpilhamento: 'Empilhe' (Variavel | ValorLiteral);
 
-ClausulaDePreservacao:
-  'Preserve'  
-  Variavel
-  ;
+ClausulaDePreservacao: 'Preserve'  Variavel;
 
-ClausulaDeDecodificacao:
-  'Decodifique'
-  HexadecimalLiteral
-  ;
+ClausulaDeDecodificacao: 'Decodifique' HexadecimalLiteral;
 
 ClausulaDeDirecionamento:
   (
@@ -317,9 +308,8 @@ ClausulaDeDirecionamento:
   Artigo
   NomeDoTipo='ponteiro'
   'para'
-  ARTIGO_DEFINIDO
-  ROTINA
-  NomeDaRotina=InvocacaoInterna
+  ARTIGO_DEFINIDO  
+  NomeDaRotina=CabecalhosDeRotinas_e_Funcoes
   ;
 
 ExpressaoCondicional:    
@@ -364,7 +354,7 @@ Argumentos:
     NomeDoArgumento=NomeComposto
   )?
   (
-    OperadorDeCoercaoDeTipo
+    OperadorDeCoercaoDeTipo // TODO: adicionar onde cabível
     ARTIGO_INDEFINIDO
     NomeDoTipo=NomeComposto
   )
