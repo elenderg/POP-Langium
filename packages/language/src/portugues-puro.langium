@@ -12,19 +12,15 @@ interface tipo{
   nome: string;
   tipo_base: string;
   tipo_estruturado: boolean;
-  campos: Campo[]; // TODO: Verificar se é viável a substituiçãode Campo[] por campos_de_estrutura[]
+  campos: Campo[];//Campo[]; // TODO: Verificar se é viável a substituiçãode Campo[] por campos_de_estrutura[]
   ponteiro: boolean;
-  tipo_apontado: string;
-  escala: escala
-}
-
-interface escala{
-  numerador: number;
-  denominador: number
+  tipo_apontado?: string;
+  fator_de_escala?: number;
+  denominador?: number
 }
 
 interface campos_de_estrutura extends tipo{    
-  referencia: boolean;
+  referencia: string;
   sobreposicao: boolean;
   array_de_bytes: boolean
 }
@@ -74,30 +70,30 @@ entry Programa:
 // ============================================================================
 
 // TODO: Fazer com que os tipos 'byte' e 'bytes' sejam reconhecidos como tipos primitivos
-DeclaracaoDeTipo :
+DeclaracaoDeTipo returns tipo: // returns tipo
   ARTIGO_INDEFINIDO
-  NomeDoTipoDerivado=NomeComposto
+  nome=NomeComposto
   OperadorDeAtribuicao  
   (
     ARTIGO_INDEFINIDO
-    tipo_base=[tipo:NomeComposto] 
-    ('com' ListaDeCampos+=Campo)?
+    tipo_base=NomeComposto
+    ('com' campos+=Campo)?
   |  
     ARTIGO_INDEFINIDO
-    tipo_base=[tipo:'ponteiro']
+    tipo_base='ponteiro'
     'para'
     ARTIGO_INDEFINIDO
-    tipo_apontado=[tipo:NomeComposto]
+    tipo_apontado=NomeComposto
   |    
-    FatorDeEscala=NumeroLiteral
-    tipo_base=[tipo:NomeComposto]  
+    fator_de_escala=INTEIRO
+    tipo_base=NomeComposto
   )
     PONTO_FINAL
   ;
 
-Campo:
+Campo:// returns campos_de_estrutura:
   (CampoComum | ArrayDeBytes)
-  (Denominacao NomeDoCampo=[NomeDoCampo:NomeComposto])?
+  (Denominacao nome=NomeComposto)?
   Sobreposicao?
   (referencia='(referência)')? 
   Pausa?
@@ -105,12 +101,12 @@ Campo:
 
 CampoComum:
   ARTIGO_INDEFINIDO
-  TipoBase=[tipo:NomeComposto]
+  tipo_base=NomeComposto
   ;
 
 ArrayDeBytes: 
   NumeroLiteral 
-  TipoBase=('byte'|'bytes') 
+  tipo_base=('byte'|'bytes') 
   ;
 
 Sobreposicao: 'sob' ARTIGO_DEFINIDO CampoSobreposto=NomeComposto;
@@ -219,7 +215,7 @@ CabecalhoAlternativoDaFuncaoComputadora:
 // ============================================================================
 
 Cabecalho:
-  NomeDaRotina=[NomeDaRotina:NomeComposto]
+  NomeDaRotina=NomeComposto
   (
     ListaDeParametros+=Parametros
   )?
@@ -283,7 +279,7 @@ EtapasDaRotina:
   | AvaliacaoCondicional 
   | ExpressaoCondicional 
   | ClausulaDeDecodificacao 
-  | ClausulaDeDirecionamento
+  | ClausulaDeRedirecionamento
   | ClausulaDePreservacao 
   | ClausulaDeEmpilhamento  
   | InstrucoesDeLaco
@@ -299,7 +295,7 @@ ClausulaDePreservacao: 'Preserve'  Variavel;
 
 ClausulaDeDecodificacao: 'Decodifique' HexadecimalLiteral;
 
-ClausulaDeDirecionamento:
+ClausulaDeRedirecionamento:
   (
       'Aponte'
     | 'Direcione'
