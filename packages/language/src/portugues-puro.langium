@@ -12,7 +12,7 @@ interface tipo{
   nome: string;
   tipo_base: string;
   tipo_estruturado: boolean;
-  campos: Campo[];//Campo[]; // TODO: Verificar se é viável a substituiçãode Campo[] por campos_de_estrutura[]
+  campos: campos_de_estrutura[]; // era Campo[]; 
   ponteiro: boolean;
   tipo_apontado?: string;
   fator_de_escala?: number;
@@ -91,7 +91,7 @@ DeclaracaoDeTipo returns tipo: // returns tipo
     PONTO_FINAL
   ;
 
-Campo:// returns campos_de_estrutura:
+Campo returns campos_de_estrutura:
   (CampoComum | ArrayDeBytes)
   (Denominacao nome=NomeComposto)?
   Sobreposicao?
