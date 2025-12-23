@@ -5,32 +5,36 @@ grammar PortuguesPuro
 // ============================================================================
 
 interface ElementoNomeado {
-  name: string
+  nome: string
 }
 
 interface tipo{
   nome: string;
   tipo_base: string;
-  tipo_estruturado: boolean;
-  campos: campos_de_estrutura[]; // era Campo[]; 
-  ponteiro: boolean;
+  tipo_estruturado?: boolean;
+  campos?: campos_de_estrutura[]; // era Campo[]; 
+  ponteiro?: boolean;
   tipo_apontado?: string;
   fator_de_escala?: number;
   denominador?: number
 }
 
 interface campos_de_estrutura extends tipo{    
-  referencia: string;
-  sobreposicao: boolean;
-  array_de_bytes: boolean
+  referencia?: string;
+  sobreposicao?: boolean;
+  array_de_bytes?: boolean
 }
 
 interface variavel_global extends tipo{
   valor: ValorLiteral
 }
 
-interface argumento{
+interface parametro{
   tipo: tipo;
+  denominacao?: string;
+}
+
+interface argumento extends parametro{  
   valor: ValorLiteral  
 }
 
@@ -39,14 +43,14 @@ interface InvocacaoDeRotina{
   argumentos: argumento[]
 }
 
-
+/*
 interface NomeDoTipo extends ElementoNomeado{}
 interface NomeDoCampo extends ElementoNomeado{}
 interface NomeDaVariavel extends ElementoNomeado{}
 interface NomeDoParametro extends tipo{}
 interface NomeDoArgumento extends tipo{}
 interface NomeDaRotina extends ElementoNomeado{}
-/*
+
 interface Literal {
   nome_interno: string;
   valor: ValorLiteral
@@ -302,10 +306,10 @@ ClausulaDeRedirecionamento:
     | 'Redirecione'
   )
   Artigo
-  NomeDoTipo='ponteiro'
+  tipo_base='ponteiro'
   'para'
   ARTIGO_DEFINIDO  
-  NomeDaRotina=CabecalhosDeRotinas_e_Funcoes
+  (Alvo=CabecalhosDeRotinas_e_Funcoes)
   ;
 
 ExpressaoCondicional:    
@@ -352,7 +356,7 @@ Argumentos:
   (
     OperadorDeCoercaoDeTipo // TODO: adicionar onde cabível
     ARTIGO_INDEFINIDO
-    NomeDoTipo=NomeComposto
+    tipo_base=NomeComposto
   )
   Modificador+=ExpressaoAlgebrica*
   ;
